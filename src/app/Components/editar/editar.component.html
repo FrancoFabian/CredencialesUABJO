@@ -1,0 +1,80 @@
+<div id="Cont-form">
+    <div class="card">
+      
+        <div class="form-container sign-up-container">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+              <div class="sectionImage">
+                    <div class="title" [class.active]="activeFotoperson === true">
+                         <img [src]="imageSrc2" class="mod">
+                    </div>
+                    <div class="form" [class.inactive]="activeFotoperson === true" id="form3">
+                          <input type="file"  
+                          id="imagenEditarA" 
+                          required
+                          
+                          (change)="onFileTWO($event)"
+                          accept="image/*"
+                          name="imagenEditarA"
+                          >
+                          <label for="imagenEditarA" id="S">
+                              Foto <i class="bi bi-person-circle"></i>
+                              
+                          </label>
+                      
+                    </div>
+
+              </div>
+              <div class="dataText">
+                    <div class="form" id="form2">
+                      <input type="text" formControlName="nombre" required>
+                      <label class="lbl-nombre" for="nombre">
+                        <span class="text-nomb">Nombre
+                        </span>
+                        </label>
+                    </div>
+                    <div class="form" id="form2">
+                      <input type="text" formControlName="categoria" required>
+                      <label class="lbl-nombre" for="clave">
+                        <span class="text-nomb">Categoria</span>
+                    </label>
+                    </div>
+              </div>
+              
+                <div class="firmaImage">
+                  
+                  <div class="title" [class.active]="activeFirma === true">
+                    <img [src]="preFirma" class="mod">
+                  </div>
+                  
+                
+                    <div class="form" id="form3" [class.inactive]="activeFirma === true">
+                      <input type="file"  
+                      id="imagenFirma" 
+                      required
+                      
+                      (change)="onFileFirma($event)"
+                      accept="image/*"
+                      name="imagenFirma"
+                      >
+                      <label for="imagenFirma" id="S">
+                          Firma <i class="bi bi-vector-pen"></i>
+                          
+                      </label>
+                    </div>
+                  
+                
+                  
+
+                </div>
+                  <div class="btnActions">
+                    <button class="btn btn-success" type="submit">Guardar</button>
+                    <button  (click)="resetForm()" class="btn btn-success" type="submit">Cancelar</button>
+                  </div>
+                
+            </form>
+              
+        </div>
+        
+    </div>
+    
+</div>

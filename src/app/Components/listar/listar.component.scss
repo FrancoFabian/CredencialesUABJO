@@ -1,0 +1,83 @@
+$backgroundNav:  linear-gradient(90deg,rgb(13, 3, 39) -60%, #161e1e 97%);
+$backgroundTr:  linear-gradient(90deg,rgb(19, 19, 36) -60%, #1a2229 97%);
+$colorHead:#c8eee7;
+$ColorPrincipal:#9409ff;
+table {
+
+    width: 70%;
+    border-collapse: collapse;
+    margin: 0 auto;
+   
+}
+
+thead {
+    color: $colorHead;
+    border-bottom: 0.2px solid #9102ff;
+    background: $backgroundNav;
+    
+}
+
+th, td {
+    border: none;
+    padding: 8px;
+    text-align: center;
+    
+}
+
+tbody tr:nth-child(odd) {
+    color: $colorHead;
+    background: $backgroundTr;
+}
+
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+.actions{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+.bi.bi-trash3-fill:hover{
+    cursor: pointer;
+    color: #f10000;
+}
+.bi.bi-pencil-square:hover{
+    cursor: pointer;
+    color: #00f1dd;
+}
+.addNew{
+    width: 300px;
+    height: auto;
+    position: absolute;
+    margin: 3% 65%;
+    
+    button {
+        width: 100%;
+        border-radius: 20px;
+        border: 1px solid $ColorPrincipal;
+        background-color: #0c0c13;
+        color: #d2d6ec;
+        font-size: 12px;
+        font-weight: bold;
+        
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: transform 80ms ease-in;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        cursor: pointer;
+        margin-top: 20px;
+        i{
+           
+            font-size: 30px;
+        }
+    
+    }
+    button:hover{
+        background-color: $ColorPrincipal ;
+        color:#0c0c13 ;
+        
+    }
+}

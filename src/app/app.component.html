@@ -1,0 +1,18 @@
+<div class="container">
+  
+  <div class="navigate">
+    @for(navs of NavItems;track $index){
+      <div class="item" class="item" [class.active]="band === $index">
+        <i class="{{navs.icon}}"></i>
+        <div class="name">
+          <p>{{navs.name}}</p>
+        </div>
+      </div>
+ 
+    }
+  </div>
+  <div class="comp">
+    
+   <router-outlet></router-outlet>
+  </div>
+</div>

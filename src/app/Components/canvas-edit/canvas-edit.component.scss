@@ -1,0 +1,36 @@
+.pdfEdit{
+    width: 100%;
+    height: 70vh;
+    background-color: rgb(14, 15, 28);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    
+    .generarPDF{
+        width: 100%;
+        height: 100px;
+        button{
+            border: none;
+            width: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            border-radius: 10px;
+            height: 50px;
+            background: rgb(128,4,11);
+            background: linear-gradient(90deg, rgba(128,4,11,1) 0%, rgba(180,11,9,1) 50%, rgba(255,0,0,1) 100%);
+            color: aliceblue;
+            font-size: 20px;
+            
+        }
+    }
+}
+
+/* Si necesitas aplicar la transformación de escala a los lienzos */
+.canvas-container canvas {
+    transform: scale(0.5); /* Inverso del scaleFactor */
+    transform-origin: top left;
+}
+

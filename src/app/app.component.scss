@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@300&display=swap');
+
+$bassPrincipal: rgb(6, 10, 23);
+$backgroundPrincipal: linear-gradient(120deg, rgb(5, 7, 20) 0%, rgb(8, 6, 25) 97%);
+$backgroundNav:  linear-gradient(90deg,rgb(24, 1, 45) -60%, #1c1d24 97%);
+$borderRad: 10px;
+$borderRad50: 20px;
+$colorActivenav: #6800ca;
+$colorIcon: #737197;
+$fontSize: 14px; // Asumo que quieres un tamaño de fuente estándar aquí
+
+.container {
+    width: 100%;
+    height: 100vh;
+    background: $bassPrincipal;
+    background: $backgroundPrincipal;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-family: 'Fira Sans Extra Condensed', sans-serif;
+
+    .navigate {
+        display: flex;
+        gap: 10px;
+        margin-top: 2vh;
+        width: auto;
+        height: 8vh;
+        padding: 1vh;
+        border-radius: $borderRad;
+        background: $backgroundNav;
+        justify-content: center;
+    }
+
+    .item {
+        width: 80px;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+
+        i {
+            color: $colorIcon;
+            font-size: 30px;
+        }
+
+        .name {
+            display: none;
+            width: 100%;
+            background-color: $colorActivenav;
+            text-align: center;
+            border-radius: $borderRad50;
+
+            p {
+                font-size: $fontSize;
+                font-weight: 900;
+            }
+        }
+
+        &.active {
+            .name {
+                display: flex;
+                justify-content: center;
+            }
+            i {
+                color: $colorActivenav;
+            }
+        }
+    }
+    .comp{
+        padding-top: 20px;
+        width:100%;
+        height: 80vh;
+        overflow: hidden;
+        
+    }
+}
