@@ -29,34 +29,67 @@ export class CanvasEditComponent implements AfterViewInit{
     if (!this._credentials) return;
 
     const positions = {
-      id: { x: 190, y: 190 },
-      categoria: { x: 190 , y: 150 },
-      nombre: { x: 190 , y: 120 },
-      foto: { x: 467 , y: 98 },
-      firma: { x: 467 , y: 230  }
+      id: { x: 30, y: 570 },
+      categoria: { x: 170 , y: 450 },
+      nombre: { x: 170 , y: 400 },
+      foto: { x: 42 , y: 396 },
+      firma: { x: 224 , y: 538  }
     };
     
-    this.addTextToCanvas(this._credentials.nombre, positions.nombre.x, positions.nombre.y);
-    this.addTextToCanvas(this._credentials.categoria,positions.categoria.x,positions.categoria.y);
-    this.addTextToCanvas(this._credentials.id.toString(),positions.id.x,positions.id.y)
-    this.loadImage(this._credentials.foto, positions.foto.x, positions.foto.y,127 ,127 );
+    this.addTextToCanvas(this._credentials.nombre, positions.nombre.x, positions.nombre.y,180,16,false);
+    this.addTextToCanvas(this._credentials.categoria,positions.categoria.x,positions.categoria.y,180,12,true);
+    this.addTextToCanvas(this._credentials.id.toString(),positions.id.x,positions.id.y,120,26,false)
+    this.loadImage(this._credentials.foto, positions.foto.x, positions.foto.y,126 ,144 );
     this.loadImage(this._credentials.firma, positions.firma.x, positions.firma.y,80);
   }
 
-  private addTextToCanvas(text: string, x: number, y: number) {
-    const scaledX = x ;
-    const scaledY = y ;
-    const fabricText = new fabric.Text(text, {
-      left: scaledX,
-      top: scaledY,
-      fontSize: 20 ,
-      fontWeight: 'bold',
-      fontFamily: 'Delicious',
-      fill: '#1a1a8f'
+  private addTextToCanvas(text: string, x: number, y: number, boxWidth: number,fontS:number,bold:boolean) {
+    const fontW = bold ? 'bold' : 'normal';
+    let originalText = text; // Declara originalText fuera del manejador de eventos
+    const fabricTextbox = new fabric.Textbox(text, {
+      left: x,
+      top: y,
+      width: boxWidth, // Ancho del cuadro de texto
+      fontSize: fontS,
+      fontFamily: 'Helvetica',
+      fontWeight:fontW,
+      fill: '#0B0B60',
+      textAlign: 'center',
+      splitByGrapheme: true, // Para un mejor manejo del salto de línea
+      // Otros atributos necesarios...
+      objectCaching: false,
+      editable: true 
     });
-    this.canvas.add(fabricText);
-  }
-  
+    
+    fabricTextbox.on('text:changed', (e) => {
+      if (e.target && e.target.type === 'textbox') {
+        const textbox = e.target as fabric.Textbox;
+        const currentText = textbox.text;
+    
+        if (currentText !== undefined && currentText.replace(originalText, '').trim().length > 0) {
+          // Si se detectan cambios distintos de espacios, reestablecer el texto original
+          textbox.set({ text: originalText });
+        } else if (currentText !== undefined) {
+          // Actualizar el texto original si solo se han añadido espacios
+          originalText = currentText;
+        }
+      }
+    });
+        // Evento cuando el textbox es seleccionado
+      fabricTextbox.on('selected', () => {
+        this.canvasElement.nativeElement.style.cursor = 'text'; // Cambia el cursor a estilo de texto
+      });
+
+      // Evento cuando el textbox es deseleccionado
+      fabricTextbox.on('deselected', () => {
+        this.canvasElement.nativeElement.style.cursor = 'default'; // Restablece el cursor al estado predeterminado
+      });
+
+
+    this.canvas.add(fabricTextbox);
+}
+
+
 
   private loadImage(file: File, x: number, y: number, newWidth?: number, newHeight?: number) {
     const reader = new FileReader();
@@ -88,8 +121,8 @@ export class CanvasEditComponent implements AfterViewInit{
   
 
   private initializeCanvas(): void {
-    const canvasWidth = 650 ;
-    const canvasHeight = 366;
+    const canvasWidth = 366 ;
+    const canvasHeight = 650;
 
 
     this.canvas = new fabric.Canvas(this.canvasElement.nativeElement, {
@@ -186,4 +219,24 @@ export class CanvasEditComponent implements AfterViewInit{
     downloadLink.click();
     document.body.removeChild(downloadLink);
   }
+  downloadCanvasSVG() {
+    // Generar la representación SVG del canvas
+    const svgData = this.canvas.toSVG({
+      // Configuraciones adicionales si son necesarias
+    });
+  
+    // Crear un Blob con los datos SVG
+    const blob = new Blob([svgData], { type: 'image/svg+xml' });
+  
+    // Crear un enlace para descargar el SVG
+    const downloadLink = document.createElement('a');
+    downloadLink.href = window.URL.createObjectURL(blob);
+    downloadLink.download = 'canvas-image.svg'; // Nombre del archivo a descargar
+  
+    // Disparar la descarga
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }
+  
 }
