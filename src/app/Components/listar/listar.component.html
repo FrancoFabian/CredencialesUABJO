@@ -1,34 +1,56 @@
 <div class="addNew">
     <button (click)="goCreate()">
-        <p>Nuevo Credencial</p>
+        <p>Nueva Credencial</p>
         <i class="bi bi-cloud-plus"></i>
     </button>
 </div>
-<table>
-    <thead>
-        <tr>
-            <th>Num.Trabajador</th>
-            <th>Nombre</th>
-            <th>Categoria</th>
-            <th>Firma</th>
-            <th>CredencialPDF</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Person</td>
-            <td>Person</td>
-            <td>Person</td>
-            <td>Person</td>
-            <td>Person</td>
-            <td class="actions">
-               <i (click)="goDelete()" class="bi bi-trash3-fill"></i>
-               <i (click)="goEdit()" class="bi bi-pencil-square"></i>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="containerEmployes">
+    @for(ryut of elementos;track $index){
+        <div class="cardEmploye" (click)="activarIndice($index)" 
+             [ngClass]="{'active': indiceActivo === $index}">
+            <div class="fakeCardEmploye">
+                <div class="imgEmployes">
+                    <img src="../../../assets/person.png" alt="">
+                </div>
+                <div class="numEmployees">
+                    <p>No. {{$index}}2342222</p>
+                </div>
+                <div class="nameEmployes">
+                    <p>Mario Alejandro Fernandez Melchor</p>
+                </div>
+                <div class="levelEmployee"
+                 [ngStyle]="{'background': getGradienteAleatorio()}">
+                    <p>Secretario Administrativo</p>
+                </div>
+                <div class="visualCredencial">
+                    <button>
+                        <i class="bi bi-cloud-download"></i>
+                        Descargar
+                    </button>
+                    <img src="../../../assets/PH.png">
+                </div>
+                <div class="buttonE">
+                    <button
+                     (click)="desactivarIndice($index); $event.stopPropagation()">
+                     <i class="bi bi-box-arrow-left"></i>
+                     Regresar
+                    </button>
+                    <button>
+                        <i class="bi bi-pencil-square"></i>
+                        Editar
+                    </button>
+                </div>
+               <div class="deleteEmploye" (click)="goDelete()">
+                <button>Eliminar Empleado</button>
+               </div>
+            </div>
+        </div>    
+    }
+    <div class="spaceExtra">
+
+    </div>
+    
+</div>
 @if(deleteA){
     <app-eliminar></app-eliminar>
 }

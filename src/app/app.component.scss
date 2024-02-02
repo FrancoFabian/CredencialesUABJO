@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@300&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Arimo&display=swap');
 $bassPrincipal: rgb(6, 10, 23);
 $backgroundPrincipal: linear-gradient(120deg, rgb(5, 7, 20) 0%, rgb(8, 6, 25) 97%);
 $backgroundNav:  linear-gradient(90deg,rgb(24, 1, 45) -60%, #1c1d24 97%);
@@ -22,7 +22,7 @@ $fontSize: 14px; // Asumo que quieres un tamaño de fuente estándar aquí
     .navigate {
         display: flex;
         gap: 10px;
-        margin-top: 2vh;
+        margin-top: 0.5vh;
         width: auto;
         height: 8vh;
         padding: 1vh;
@@ -65,13 +65,17 @@ $fontSize: 14px; // Asumo que quieres un tamaño de fuente estándar aquí
             i {
                 color: $colorActivenav;
             }
+            p{
+                font-family: 'Arimo', sans-serif;
+                color: aliceblue;
+                letter-spacing: 1px;
+            }
         }
     }
     .comp{
-        padding-top: 20px;
-        width:100%;
-        height: 80vh;
-        overflow: hidden;
         
+        width:100%;
+        height: 88vh;
+        overflow: hidden;
     }
 }

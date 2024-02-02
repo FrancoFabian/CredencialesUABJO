@@ -5,6 +5,7 @@ $ColorPrincipal:#9409ff;
     height: 100%;
     background: #0c0c139e;
     position: absolute;
+    z-index: 2000;
 }
 .containerDelete{
     border-radius: 20px;
@@ -40,7 +41,8 @@ $ColorPrincipal:#9409ff;
         
         }
         button:hover{
-            background-color: $ColorPrincipal ;
+            background: rgb(201,4,255);
+            background: linear-gradient(90deg, rgba(201,4,255,1) 30%, rgba(119,9,209,1) 100%);
             color:#0c0c13 ;
             
         }
