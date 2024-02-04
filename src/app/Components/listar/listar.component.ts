@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EliminarComponent } from '../eliminar/eliminar.component';
 import { MostrarService } from '../../Services/mostrar.service';
@@ -13,8 +13,8 @@ import { CommonModule } from '@angular/common'
   templateUrl: './listar.component.html',
   styleUrl: './listar.component.scss'
 })
-export class ListarComponent {
-  gradientes = [
+export class ListarComponent implements OnInit {
+  gradientes:string[] = [
     'linear-gradient(90deg, rgba(230,64,10,1) 43%, rgba(212,170,0,1) 100%)',
     'linear-gradient(90deg, rgba(140,230,10,1) 43%, rgba(7,179,63,1) 100%)',
     'linear-gradient(90deg, rgba(10,230,190,1) 43%, rgba(9,129,168,1) 100%)',
@@ -24,8 +24,8 @@ export class ListarComponent {
     'linear-gradient(90deg, rgba(241,255,0,1) 43%, rgba(255,162,0,1) 100%)',
     'linear-gradient(90deg, rgba(223,180,232,1) 43%, rgba(148,159,244,1) 100%)',
     'linear-gradient(90deg, rgba(72,166,240,1) 43%, rgba(119,112,249,1) 100%)'
-    // Añade más gradientes aquí
   ];
+  gradientesAleatorios: string[] = [];
   ultimoGradiente = '';
   indiceActivo: number | null = null;
   elementos = Array(112).fill(null)
@@ -40,23 +40,34 @@ export class ListarComponent {
     this.deleteArt.changeNav(2)
     this.route.navigate(['editar'])
   }
-  constructor(private deleteArt:MostrarService){
+  constructor(private deleteArt:MostrarService,
+   
+    ){
     this.deleteArt.currentMostrar.subscribe(mostrar => {
       this.deleteA = mostrar;
     });
+  }
+  ngOnInit(): void {
+    this.prepararGradientesAleatorios();
   }
   goDelete(){
     this.deleteArt.changeNav(3)
     this.deleteArt.changeMostrar(true)
   }
-  getGradienteAleatorio(): string {
-    let nuevoGradiente = this.ultimoGradiente;
-    while (nuevoGradiente === this.ultimoGradiente) {
-      nuevoGradiente = this.gradientes[Math.floor(Math.random() * this.gradientes.length)];
-    }
-    this.ultimoGradiente = nuevoGradiente;
-    return nuevoGradiente;
+  prepararGradientesAleatorios(): void {
+    this.elementos.forEach((_, index) => {
+      let nuevoGradiente;
+      do {
+        nuevoGradiente = this.gradientes[Math.floor(Math.random() * this.gradientes.length)];
+      } while (this.gradientesAleatorios[index - 1] === nuevoGradiente); // Asegurarse de que no sea igual al anterior
+      this.gradientesAleatorios.push(nuevoGradiente);
+    });
   }
+
+  getGradiente(indice: number): string {
+    return this.gradientesAleatorios[indice];
+  }
+
   activarIndice(indice: number) {
       this.indiceActivo = indice; // Activa el nuevo índice
   }

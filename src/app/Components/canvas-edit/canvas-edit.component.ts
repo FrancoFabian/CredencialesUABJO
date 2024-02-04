@@ -1,8 +1,9 @@
-import { Component,ElementRef, ViewChild, AfterViewInit,Input, SimpleChanges } from '@angular/core';
+import { Component,ElementRef, ViewChild, AfterViewInit,Input, SimpleChanges, inject } from '@angular/core';
 import { fabric } from 'fabric';
 import { CredentialsWithFiles } from '../../model/CredentialsWithFiles';
-
-
+import { CreateCrend } from '../../model/CreateCrend';
+import { CrearCredentialsService } from '../../Services/crear-credentials.service';
+import { base64imageBack } from '../../model/base64imageBack';
 @Component({
   selector: 'app-canvas-edit',
   standalone: true,
@@ -12,6 +13,7 @@ import { CredentialsWithFiles } from '../../model/CredentialsWithFiles';
 })
 export class CanvasEditComponent implements AfterViewInit{
   @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
+  private crearCredentialsService = inject(CrearCredentialsService);
  private canvas!:fabric.Canvas;
  private _credentials?: CredentialsWithFiles;
   ScalaFactor:number = 0;
@@ -29,18 +31,18 @@ export class CanvasEditComponent implements AfterViewInit{
     if (!this._credentials) return;
 
     const positions = {
-      id: { x: 30, y: 570 },
-      categoria: { x: 170 , y: 450 },
-      nombre: { x: 170 , y: 400 },
-      foto: { x: 42 , y: 396 },
-      firma: { x: 224 , y: 538  }
+      id: { x: 54, y: 570 },
+      categoria: { x: 194 , y: 460 },
+      nombre: { x: 194 , y: 400 },
+      foto: { x: 50 , y: 400 },
+      firma: { x: 224 , y: 568  }
     };
     
-    this.addTextToCanvas(this._credentials.nombre, positions.nombre.x, positions.nombre.y,180,16,false);
-    this.addTextToCanvas(this._credentials.categoria,positions.categoria.x,positions.categoria.y,180,12,true);
+    this.addTextToCanvas(this._credentials.nombre, positions.nombre.x, positions.nombre.y,180,18,false);
+    this.addTextToCanvas(this._credentials.categoria,positions.categoria.x,positions.categoria.y,180,16,true);
     this.addTextToCanvas(this._credentials.id.toString(),positions.id.x,positions.id.y,120,26,false)
-    this.loadImage(this._credentials.foto, positions.foto.x, positions.foto.y,126 ,144 );
-    this.loadImage(this._credentials.firma, positions.firma.x, positions.firma.y,80);
+    this.loadImage(this._credentials.fotoBas64, positions.foto.x, positions.foto.y,127 ,146 );
+    this.loadImage(this._credentials.firmaBas64, positions.firma.x, positions.firma.y,140);
   }
 
   private addTextToCanvas(text: string, x: number, y: number, boxWidth: number,fontS:number,bold:boolean) {
@@ -89,9 +91,30 @@ export class CanvasEditComponent implements AfterViewInit{
     this.canvas.add(fabricTextbox);
 }
 
+private loadImage(base64Image: string, x: number, y: number, newWidth?: number, newHeight?: number) {
+  
+
+    fabric.Image.fromURL(base64Image, (img) => {
+      // Ajusta la imagen como antes
+      if (newWidth !== undefined && newHeight !== undefined && img.width && img.height) {
+        const scaleX = newWidth / img.width;
+        const scaleY = newHeight / img.height;
+        img.scaleX = scaleX;
+        img.scaleY = scaleY;
+      } else {
+        if (newWidth !== undefined) img.scaleToWidth(newWidth);
+        if (newHeight !== undefined) img.scaleToHeight(newHeight);
+      }
+
+      img.set({ left: x, top: y });
+      this.canvas.add(img);
+      this.canvas.renderAll();
+    });
+ 
+}
 
 
-  private loadImage(file: File, x: number, y: number, newWidth?: number, newHeight?: number) {
+  /*private loadImage(file: File, x: number, y: number, newWidth?: number, newHeight?: number) {
     const reader = new FileReader();
   reader.onload = (event) => {
     fabric.Image.fromURL(event.target!.result as string, (img) => {
@@ -116,12 +139,12 @@ export class CanvasEditComponent implements AfterViewInit{
     });
   };
     reader.readAsDataURL(file);
-  }
+  }*/
   
   
 
   private initializeCanvas(): void {
-    const canvasWidth = 366 ;
+    const canvasWidth = 414 ;
     const canvasHeight = 650;
 
 
@@ -131,7 +154,7 @@ export class CanvasEditComponent implements AfterViewInit{
       height: canvasHeight
     });
 
-    fabric.Image.fromURL('../../../assets/1.png', (img) => {
+    fabric.Image.fromURL(base64imageBack.image1, (img) => {
       this.setCanvasBackground(img, canvasWidth, canvasHeight);
     });
   }
@@ -171,54 +194,6 @@ export class CanvasEditComponent implements AfterViewInit{
     }
     // Aquí puedes añadir cualquier otro elemento adicional
   }
-  sendEditsToServer() {
-    const canvasData = this.canvas.toJSON();
-    fetch('http://localhost:8008/api/Credenciales/api/save-canvas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ canvas: canvasData })
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Success:', data);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-  }
-  printCanvasJSON() {
-    const canvasData = this.canvas.toJSON();
-    const canvasDataString = JSON.stringify(canvasData, null, 2); // Convertir a cadena JSON formateada
-    const blob = new Blob([canvasDataString], { type: 'text/plain' }); // Crear un Blob con los datos
-
-    const link = document.createElement('a');
-    link.download = 'canvasData.txt'; // Nombre del archivo
-    link.href = window.URL.createObjectURL(blob);
-    link.click(); // Iniciar la descarga
-    link.remove(); // Limpiar después de la descarga
-}
-
-
-  
-  downloadCanvasImage() {
-    // Convertir el lienzo en una data URL (formato PNG por defecto)
-    const dataURL = this.canvas.toDataURL({
-      format: 'png',
-      quality: 1 // Calidad máxima para PNG
-    });
-
-    // Crear un elemento de enlace para la descarga
-    const downloadLink = document.createElement('a');
-    downloadLink.href = dataURL;
-    downloadLink.download = 'canvas-image.png'; // Nombre del archivo a descargar
-
-    // Disparar la descarga
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-  }
   downloadCanvasSVG() {
     // Generar la representación SVG del canvas
     const svgData = this.canvas.toSVG({
@@ -226,17 +201,42 @@ export class CanvasEditComponent implements AfterViewInit{
     });
   
     // Crear un Blob con los datos SVG
-    const blob = new Blob([svgData], { type: 'image/svg+xml' });
-  
-    // Crear un enlace para descargar el SVG
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+    const svgFileName = `${this._credentials?.id}_${this._credentials?.nombre.replace(/\s+/g, '')}_${this._credentials?.categoria}.svg`;
+    const svgFile = new File([svgBlob], svgFileName, { type: 'image/svg+xml' });
+    if (this._credentials) {
+      const credentialsToUpload = new CreateCrend(
+        this._credentials.id,
+        this._credentials.nombre,
+        this._credentials.foto,
+        this._credentials.categoria,
+        this._credentials.firma,
+        svgFile // Este es el nuevo SVG como File
+      );
+    
+      this.crearCredentialsService.uploadCredentials(credentialsToUpload).subscribe({
+        next: (response: any) => {
+          console.log('SVG and credentials uploaded successfully', response);
+        },
+        error: (error: any) => {
+          console.error('Error uploading SVG and credentials', error);
+        },
+        complete: () => console.log('Upload operation completed')
+      });
+      
+    } else {
+      console.error('Credentials data is not available.');
+    }
+    
+    /* Crear un enlace para descargar el SVG
     const downloadLink = document.createElement('a');
     downloadLink.href = window.URL.createObjectURL(blob);
-    downloadLink.download = 'canvas-image.svg'; // Nombre del archivo a descargar
+    downloadLink.download = `${this._credentials?.id}_${this._credentials?.nombre.replace(/\s+/g, '')}_${this._credentials?.categoria}.svg`; // Nombre del archivo a descargar
   
     // Disparar la descarga
     document.body.appendChild(downloadLink);
     downloadLink.click();
-    document.body.removeChild(downloadLink);
+    document.body.removeChild(downloadLink);*/
   }
   
 }

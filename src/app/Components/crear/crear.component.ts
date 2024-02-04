@@ -27,6 +27,7 @@ export class CrearComponent {
     private share:MostrarService
     ) {
     this.form = this.fb.group({
+      nomempleado:['',[Validators.required]],
       nombre: ['', [Validators.required]],
       categoria: ['', [Validators.required]],
       
@@ -36,11 +37,13 @@ export class CrearComponent {
   onSubmit() {
     if(this.imageSave !== null && this.imageFirma !== null){
       const credentials = new CredentialsWithFiles(
-        12345,
+        this.form.value.nomempleado,
         this.form.value.nombre,
         this.imageSave,
         this.form.value.categoria,
-        this.imageFirma
+        this.imageFirma,
+        this.imageSrc2,
+        this.preFirma
       );
       this.credentialsA = credentials;
       this.activeCredentialsEdit = true
