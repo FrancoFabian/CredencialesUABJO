@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateCrend } from '../model/CreateCrend';
 
@@ -9,7 +9,7 @@ import { CreateCrend } from '../model/CreateCrend';
 export class CrearCredentialsService {
   private apiUrl = 'http://localhost:8008/api/Credenciales/subirDatosCredenciales'; // Ajusta la URL según sea necesario
   constructor(private http: HttpClient) {}
-  uploadCredentials(credentials: CreateCrend): Observable<any> {
+  uploadCredentials(credentials: CreateCrend): Observable<HttpResponse<string>> {
     const formData = new FormData();
     formData.append('numEmpleado', credentials.numEmpleado.toString());
     formData.append('nombre', credentials.nombre);
@@ -18,6 +18,10 @@ export class CrearCredentialsService {
     formData.append('firma', credentials.firma);
     formData.append('svg', credentials.svg);
 
-    return this.http.post(this.apiUrl, formData);
+    return this.http.post(this.apiUrl, formData, {
+      observe: 'response',
+      responseType: 'text'
+    });
+
   }
 }

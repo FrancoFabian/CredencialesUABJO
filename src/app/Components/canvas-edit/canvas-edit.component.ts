@@ -1,19 +1,36 @@
-import { Component,ElementRef, ViewChild, AfterViewInit,Input, SimpleChanges, inject } from '@angular/core';
+import { Component,ElementRef,
+         ViewChild, AfterViewInit,Input, inject, 
+         OnDestroy,OnInit,NgZone ,ChangeDetectorRef} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { fabric } from 'fabric';
 import { CredentialsWithFiles } from '../../model/CredentialsWithFiles';
 import { CreateCrend } from '../../model/CreateCrend';
 import { CrearCredentialsService } from '../../Services/crear-credentials.service';
 import { base64imageBack } from '../../model/base64imageBack';
+import { HttpResponse,HttpErrorResponse } from '@angular/common/http';
+import { WebSocketService } from '../../Services/web-socket.service';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { MostrarService } from '../../Services/mostrar.service';
 @Component({
   selector: 'app-canvas-edit',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './canvas-edit.component.html',
   styleUrl: './canvas-edit.component.scss'
 })
-export class CanvasEditComponent implements AfterViewInit{
+export class CanvasEditComponent implements AfterViewInit,OnDestroy,OnInit{
   @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
   private crearCredentialsService = inject(CrearCredentialsService);
+  private webSocketService = inject(WebSocketService);
+  private changeDetectorRef =inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
+  private router = inject(Router);
+  private share = inject(MostrarService)
+  progress: number = 0; // Para almacenar y mostrar el progreso
+  uploadSuccess: boolean = false;
+  pdfButton:boolean = true;
+  private progressSubscription?: Subscription;
  private canvas!:fabric.Canvas;
  private _credentials?: CredentialsWithFiles;
   ScalaFactor:number = 0;
@@ -27,6 +44,37 @@ export class CanvasEditComponent implements AfterViewInit{
   ngAfterViewInit(): void {
     this.initializeCanvas();
   }
+  ngOnInit(): void {
+    this.webSocketService.connect();
+    this.progressSubscription = this.webSocketService.getMessages().subscribe({
+      next: (message) => {
+        this.ngZone.run(() => {
+          try {
+            // Asegúrate de que el mensaje es un objeto JSON válido y tiene la propiedad progress
+            let parsedMessage = JSON.parse(message.body);
+            if (parsedMessage.hasOwnProperty('progress')) {
+              this.progress = parsedMessage.progress;
+              
+              this.changeDetectorRef.detectChanges(); // Forzar la detección de cambios
+            } else {
+              console.error('El mensaje no contiene la propiedad progress');
+            }
+          } catch (e) {
+            console.error('Error al analizar el mensaje', e);
+          }
+        });
+      },
+      error: (error) => console.error(error),
+      complete: () => console.log('Conexión WebSocket completada')
+    });
+  }
+  
+  
+  ngOnDestroy(): void {
+    if (this.progressSubscription) {
+      this.progressSubscription.unsubscribe(); // Limpieza
+    }
+  }
   private addCredentialsToCanvas() {
     if (!this._credentials) return;
 
@@ -34,14 +82,14 @@ export class CanvasEditComponent implements AfterViewInit{
       id: { x: 54, y: 570 },
       categoria: { x: 194 , y: 460 },
       nombre: { x: 194 , y: 400 },
-      foto: { x: 50 , y: 400 },
+      foto: { x: 49 , y: 400 },
       firma: { x: 224 , y: 568  }
     };
     
     this.addTextToCanvas(this._credentials.nombre, positions.nombre.x, positions.nombre.y,180,18,false);
     this.addTextToCanvas(this._credentials.categoria,positions.categoria.x,positions.categoria.y,180,16,true);
     this.addTextToCanvas(this._credentials.id.toString(),positions.id.x,positions.id.y,120,26,false)
-    this.loadImage(this._credentials.fotoBas64, positions.foto.x, positions.foto.y,127 ,146 );
+    this.loadImage(this._credentials.fotoBas64, positions.foto.x, positions.foto.y,129 ,148 );
     this.loadImage(this._credentials.firmaBas64, positions.firma.x, positions.firma.y,140);
   }
 
@@ -113,36 +161,6 @@ private loadImage(base64Image: string, x: number, y: number, newWidth?: number, 
  
 }
 
-
-  /*private loadImage(file: File, x: number, y: number, newWidth?: number, newHeight?: number) {
-    const reader = new FileReader();
-  reader.onload = (event) => {
-    fabric.Image.fromURL(event.target!.result as string, (img) => {
-      if (newWidth !== undefined && newHeight !== undefined && img.width && img.height) {
-        // Escalar la imagen independientemente en X e Y para forzar las dimensiones
-        const scaleX = newWidth / img.width;
-        const scaleY = newHeight / img.height;
-        img.scaleX = scaleX;
-        img.scaleY = scaleY;
-      } else {
-        if (newWidth !== undefined) {
-          img.scaleToWidth(newWidth);
-        }
-        if (newHeight !== undefined) {
-          img.scaleToHeight(newHeight);
-        }
-      }
-
-      img.set({ left: x, top: y });
-      this.canvas.add(img);
-      this.canvas.renderAll();
-    });
-  };
-    reader.readAsDataURL(file);
-  }*/
-  
-  
-
   private initializeCanvas(): void {
     const canvasWidth = 414 ;
     const canvasHeight = 650;
@@ -195,6 +213,7 @@ private loadImage(base64Image: string, x: number, y: number, newWidth?: number, 
     // Aquí puedes añadir cualquier otro elemento adicional
   }
   downloadCanvasSVG() {
+    this.pdfButton = false;
     // Generar la representación SVG del canvas
     const svgData = this.canvas.toSVG({
       // Configuraciones adicionales si son necesarias
@@ -215,28 +234,44 @@ private loadImage(base64Image: string, x: number, y: number, newWidth?: number, 
       );
     
       this.crearCredentialsService.uploadCredentials(credentialsToUpload).subscribe({
-        next: (response: any) => {
-          console.log('SVG and credentials uploaded successfully', response);
+        next: (response: HttpResponse<string>) => {
+          console.log('Response:', response);
+          if (response.status === 200) {
+            console.log('SVG and credentials uploaded successfully', response.body);
+          }
         },
-        error: (error: any) => {
+        error: (error: HttpErrorResponse) => {
           console.error('Error uploading SVG and credentials', error);
         },
-        complete: () => console.log('Upload operation completed')
+        complete: () => {
+        console.log('Upload operation completed')
+        this.showSuccessMessage();
+      }
       });
+      
       
     } else {
       console.error('Credentials data is not available.');
     }
     
-    /* Crear un enlace para descargar el SVG
-    const downloadLink = document.createElement('a');
-    downloadLink.href = window.URL.createObjectURL(blob);
-    downloadLink.download = `${this._credentials?.id}_${this._credentials?.nombre.replace(/\s+/g, '')}_${this._credentials?.categoria}.svg`; // Nombre del archivo a descargar
-  
-    // Disparar la descarga
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);*/
+    
+  }
+  showSuccessMessage() {
+    this.uploadSuccess = true;
+  // Forzar la detección de cambios para actualizar la UI inmediatamente
+    this.changeDetectorRef.detectChanges();
+    // Aquí podrías cambiar una variable de estado para mostrar un mensaje en la UI, por ejemplo:
+    
+    setTimeout(() =>{
+    this.uploadSuccess = false;
+    // Opcionalmente, resetear el progreso y otros estados si es necesario
+    this.progress = 0;
+    this.pdfButton = true; // Muestra nuevamente el botón si es el flujo deseado
+    this.changeDetectorRef.detectChanges(); 
+    this.credentials = undefined; // O establecer a un nuevo valor por defecto si es apropiado
+    this.share.changeNav(0)
+    this.router.navigate(['listar']);
+  }, 3000); // Oculta el mensaje después de 3 segundos
   }
   
 }

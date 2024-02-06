@@ -1,6 +1,18 @@
 <div class="pdfEdit">
     <canvas #canvasElement></canvas>
     <div class="generarPDF">
-        <button (click)="downloadCanvasSVG()">Generar <i class="bi bi-file-pdf-fill"></i></button>
+        
+        <button *ngIf="pdfButton === true" (click)="downloadCanvasSVG()">Generar <i class="bi bi-file-pdf-fill"></i></button>
+        
+        <div class="progress-container" *ngIf="!pdfButton">
+            <progress [value]="progress" max="100" class="progress-bar"></progress>
+            <div *ngIf="uploadSuccess" class="success-animation">
+              ✔️ Carga completada
+            </div>
+          </div>
+          
+        
+        
+          
     </div>
 </div>

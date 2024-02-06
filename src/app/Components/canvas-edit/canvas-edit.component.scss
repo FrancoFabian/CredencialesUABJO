@@ -50,6 +50,54 @@
             background: rgb(186,0,0);
             background: linear-gradient(90deg, rgba(186,0,0,1) 0%, rgba(217,11,68,1) 35%, rgba(255,132,0,1) 100%);
         }
+        .progress-container {
+            position: relative;
+            width: 100%;
+            .progress-bar {
+              width: 100%;
+              -webkit-appearance: none;
+              appearance: none;
+              height: 20px;
+              border: none;
+              border-radius: 10px;
+              overflow: hidden;
+              &::-webkit-progress-bar {
+                background: #0d1627;
+              }
+              &::-webkit-progress-value {
+                background: rgb(0,189,44);
+                background: linear-gradient(90deg, rgba(0,189,44,1) 0%, rgba(72,199,7,1) 42%, rgba(155,255,0,1) 100%);
+                transition: width 0.5s ease;
+              }
+              &::-moz-progress-bar {
+                background: rgb(0,189,44);
+                background: linear-gradient(90deg, rgba(0,189,44,1) 0%, rgba(72,199,7,1) 42%, rgba(155,255,0,1) 100%);
+              }
+            }
+            .success-animation {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 80px;
+              background: rgb(2,0,36);
+              background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(17,17,68,1) 57%, rgba(37,22,96,1) 100%);
+              border: 1px solid #01ff3c;
+              border-radius: 20px;
+              color: white;
+              font-size: 20px;
+              animation: fadeIn 2s;
+            }
+          }
+          
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          
     }
 }
 

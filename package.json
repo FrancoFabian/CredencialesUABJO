@@ -18,10 +18,13 @@
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
+    "@stomp/stompjs": "^7.0.0",
     "@types/fabric": "^5.3.6",
+    "@types/sockjs-client": "^1.5.4",
     "bootstrap-icons": "^1.11.3",
     "fabric": "^5.3.0",
     "rxjs": "~7.8.0",
+    "sockjs-client": "^1.6.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },

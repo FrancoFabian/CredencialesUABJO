@@ -4,55 +4,67 @@
         <i class="bi bi-cloud-plus"></i>
     </button>
 </div>
+<div class="search">
+    <input type="text" placeholder="Buscas algo?..." [(ngModel)]="searchTerm" (ngModelChange)="filtrarEmpleados()">
+    <button><i class="bi bi-search"></i></button>
+</div>
 <div class="containerEmployes">
-    @for(ryut of elementos;track $index){
-        <div class="cardEmploye" (click)="activarIndice($index)" 
-             [ngClass]="{'active': indiceActivo === $index}">
-            <div class="fakeCardEmploye">
-                <div class="imgEmployes">
-                    <img src="../../../assets/person.png" alt="">
+    @if(empleados.length > 0){
+        @for(e of empleadosFiltrados;track $index){
+            <div class="cardEmploye" (click)="activarIndice($index)" 
+                 [ngClass]="{'active': indiceActivo === $index}">
+                <div class="fakeCardEmploye">
+                    <div class="imgEmployes">
+                        <img [src]="imgUrl+e.foto" alt="">
+                    </div>
+                    <div class="numEmployees">
+                        <p>{{e.numEmpleado}}</p>
+                    </div>
+                    <div class="nameEmployes">
+                        <p>{{e.nombre}}</p>
+                    </div>
+                    <div class="levelEmployee"
+                     [ngStyle]="{'background': getGradiente($index)}">
+                        <p>{{e.categoria}}</p>
+                    </div>
+                    <div class="visualCredencial">
+                        <button (click)="goPrint(e.pdf)">
+                            <i class="bi bi-printer-fill"></i>
+                            Imprimir
+                        </button>
+                        <img [src]="imgUrl+e.visualizacion">
+                    </div>
+                    <div class="buttonE">
+                        <button
+                         (click)="desactivarIndice(); $event.stopPropagation()">
+                         <i class="bi bi-box-arrow-left"></i>
+                         Regresar
+                        </button>
+                        <button>
+                            <i class="bi bi-pencil-square"></i>
+                            Editar
+                        </button>
+                    </div>
+                   <div class="deleteEmploye" (click)="goDelete(e.numEmpleado)">
+                    <button>Eliminar Empleado</button>
+                   </div>
                 </div>
-                <div class="numEmployees">
-                    <p>No. {{$index}}2342222</p>
-                </div>
-                <div class="nameEmployes">
-                    <p>Mario Alejandro Fernandez Melchor</p>
-                </div>
-                <div class="levelEmployee"
-                 [ngStyle]="{'background': getGradiente($index)}">
-                    <p>Secretario Administrativo</p>
-                </div>
-                <div class="visualCredencial">
-                    <button>
-                        <i class="bi bi-cloud-download"></i>
-                        Descargar
-                    </button>
-                    <img src="../../../assets/PH.png">
-                </div>
-                <div class="buttonE">
-                    <button
-                     (click)="desactivarIndice($index); $event.stopPropagation()">
-                     <i class="bi bi-box-arrow-left"></i>
-                     Regresar
-                    </button>
-                    <button>
-                        <i class="bi bi-pencil-square"></i>
-                        Editar
-                    </button>
-                </div>
-               <div class="deleteEmploye" (click)="goDelete()">
-                <button>Eliminar Empleado</button>
-               </div>
-            </div>
-        </div>    
+            </div>    
+        }
+
+    }@else {
+        <div class="Azure">
+            <h1>{{dataEmpty}}</h1>
+        </div>
     }
+   
     <div class="spaceExtra">
 
     </div>
     
 </div>
-@if(deleteA){
-    <app-eliminar></app-eliminar>
+@if(deleteA === true){
+    <app-eliminar [numEmployee]="paraEliminar"></app-eliminar>
 }
 
 

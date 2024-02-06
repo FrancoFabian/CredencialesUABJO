@@ -49,8 +49,8 @@ $ColorPrincipal:#9409ff;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: 11vh;
     padding-top: 20px;
-    font-family: 'Arimo', sans-serif;
     gap: 30px;
     // Estiliza el scrollbar (para Webkit/Blink navegadores como Chrome, Safari, Edge)
     &::-webkit-scrollbar {
@@ -65,6 +65,14 @@ $ColorPrincipal:#9409ff;
         background: rgb(128,0,196);
         background: linear-gradient(350deg, rgba(128,0,196,1) 0%, rgba(134,21,255,1) 35%, rgba(0,212,255,1) 100%);
         border-radius: 20px; // Redondea las esquinas del thumb
+    }
+    .Azure{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #b9c0ed;
     }
     .cardEmploye{
        
@@ -126,7 +134,8 @@ $ColorPrincipal:#9409ff;
                 height: 140px;
                 display: flex;
                 align-items: center;
-                
+                display: flex;
+                justify-content: center;
                 text-align: center;
                 padding-left: 30px;
                 padding-right: 30px;
@@ -189,6 +198,8 @@ $ColorPrincipal:#9409ff;
         .fakeCardEmploye{
             width: 66%;
             height: 80%;
+            background: rgb(8,52,54);
+            background: linear-gradient(174deg, rgb(0, 37, 46) 0%, rgb(19, 13, 41) 100%);
             position: relative;
             cursor: default;
             
@@ -325,7 +336,48 @@ $ColorPrincipal:#9409ff;
     }
   
     .spaceExtra{
+        
         width: 100%;
-        height: 50px;
+        height: 150px;
     }
 }
+.search {
+    width: 30%;
+    display: flex;
+    align-items: center;
+    background-color: #202020; /* Fondo oscuro */
+    padding: 10px;
+    border-radius: 24px; /* Bordes redondeados */
+  }
+  
+  .search input {
+    width: 100%;
+    padding: 10px;
+    margin-right: 10px;
+    background-color: #121212; /* Fondo más oscuro para el input */
+    border: 1px solid #303030; /* Borde sutil */
+    color: #fff; /* Texto blanco */
+    border-radius: 24px; /* Bordes redondeados */
+  }
+  
+  .search input::placeholder {
+    color: #aaa; /* Placeholder más claro */
+  }
+  
+  .search button {
+    background-color: #323232; /* Fondo del botón */
+    border: none; /* Sin bordes */
+    padding: 10px;
+    border-radius: 50%; /* Forma circular */
+    cursor: pointer; /* Cursor tipo mano */
+  }
+  
+  .search button i {
+    color: #fff; /* Icono blanco */
+  }
+  
+  /* Cambia el color al pasar el mouse sobre el botón */
+  .search button:hover {
+    background-color: #434343;
+  }
+  

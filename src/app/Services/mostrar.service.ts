@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject} from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
@@ -9,6 +9,9 @@ export class MostrarService {
   currentMostrar = this.mostrarSource.asObservable();
   private activeNavbar = new BehaviorSubject<number>(0);
   currentAtive = this.activeNavbar.asObservable();
+  private notificarEliminacionSource = new BehaviorSubject<boolean>(false);
+  notificarEliminacion$ = this.notificarEliminacionSource.asObservable();
+
   constructor() { }
 
   changeMostrar(value: boolean) {
@@ -17,4 +20,8 @@ export class MostrarService {
   changeNav(value: number){
     this.activeNavbar.next(value);
   }
+  notificarEliminacion(value: boolean) {
+    this.notificarEliminacionSource.next(value);
+  }
+
 }
