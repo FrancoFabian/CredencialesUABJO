@@ -90,7 +90,7 @@ export class CanvasEditComponent implements AfterViewInit,OnDestroy,OnInit{
     this.addTextToCanvas(this._credentials.categoria,positions.categoria.x,positions.categoria.y,180,16,true);
     this.addTextToCanvas(this._credentials.id.toString(),positions.id.x,positions.id.y,120,26,false)
     this.loadImage(this._credentials.fotoBas64, positions.foto.x, positions.foto.y,129 ,148 );
-    this.loadImage(this._credentials.firmaBas64, positions.firma.x, positions.firma.y,140);
+    this.loadImage(this._credentials.firmaBas64, positions.firma.x, positions.firma.y,140,150);
   }
 
   private addTextToCanvas(text: string, x: number, y: number, boxWidth: number,fontS:number,bold:boolean) {
@@ -212,7 +212,7 @@ private loadImage(base64Image: string, x: number, y: number, newWidth?: number, 
     }
     // Aquí puedes añadir cualquier otro elemento adicional
   }
-  downloadCanvasSVG() {
+  /*downloadCanvasSVG() {
     this.pdfButton = false;
     // Generar la representación SVG del canvas
     const svgData = this.canvas.toSVG({
@@ -223,6 +223,45 @@ private loadImage(base64Image: string, x: number, y: number, newWidth?: number, 
     const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
     const svgFileName = `${this._credentials?.id}_${this._credentials?.nombre.replace(/\s+/g, '')}_${this._credentials?.categoria}.svg`;
     const svgFile = new File([svgBlob], svgFileName, { type: 'image/svg+xml' });
+    // Convertir el Blob SVG a una URL
+  const url = URL.createObjectURL(svgBlob);
+  
+  // Crear un elemento imagen para cargar el SVG
+  const img = new Image();
+  img.onload = () => {
+    // Crear un canvas con las dimensiones deseadas
+    const canvas = document.createElement('canvas');
+    canvas.width = 3933; // Ancho deseado
+    canvas.height = 6175; // Alto deseado
+    const ctx = canvas.getContext('2d');
+    
+    // Dibujar la imagen SVG en el canvas con las dimensiones deseadas
+    ctx?.drawImage(img, 0, 0, 3933, 6175);
+    
+    // Exportar el contenido del canvas a PNG
+    canvas.toBlob((blob) => {
+      if (blob) { // Verificar que blob no es null
+        const pngFile = new File([blob], 'downloaded_image.png', { type: 'image/png' });
+        
+        // Crear un enlace de descarga para el PNG
+        const downloadLink = document.createElement('a');
+        downloadLink.href = URL.createObjectURL(pngFile);
+        downloadLink.download = 'downloaded_image.png';
+        
+        // Simular un clic en el enlace para iniciar la descarga
+        downloadLink.click();
+        
+        // Opcional: Limpiar la URL creada para el Blob
+        URL.revokeObjectURL(downloadLink.href);
+      } else {
+        // Manejar el caso en que blob es null, por ejemplo, mostrando un mensaje de error
+        console.error('No se pudo generar el PNG.');
+      }
+    }, 'image/png');
+  };
+  img.src = url
+  
+
     if (this._credentials) {
       const credentialsToUpload = new CreateCrend(
         this._credentials.id,
@@ -255,7 +294,75 @@ private loadImage(base64Image: string, x: number, y: number, newWidth?: number, 
     }
     
     
+  }*/
+  downloadCanvasSVG() {
+    this.pdfButton = false;
+    // Generar la representación SVG del canvas
+    const svgData = this.canvas.toSVG({
+      // Configuraciones adicionales si son necesarias
+    });
+  
+    // Crear un Blob con los datos SVG
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+  
+    // Convertir el Blob SVG a una URL
+    const url = URL.createObjectURL(svgBlob);
+  
+    // Crear un elemento imagen para cargar el SVG
+    const img = new Image();
+    img.onload = () => {
+      // Crear un canvas con las dimensiones deseadas
+      const canvas = document.createElement('canvas');
+      canvas.width = 3933; // Ancho deseado
+      canvas.height = 6175; // Alto deseado
+      const ctx = canvas.getContext('2d');
+  
+      // Dibujar la imagen SVG en el canvas con las dimensiones deseadas
+      ctx?.drawImage(img, 0, 0, 3933, 6175);
+  
+      // Exportar el contenido del canvas a PNG
+      canvas.toBlob((blob) => {
+        if (blob) { // Verificar que blob no es null
+          const pngFile = new File([blob], 'credentials_image.png', { type: 'image/png' });
+  
+          if (this._credentials) {
+            // Aquí se modifica para usar el PNG generado en lugar del SVG
+            const credentialsToUpload = new CreateCrend(
+              this._credentials.id,
+              this._credentials.nombre,
+              this._credentials.foto,
+              this._credentials.categoria,
+              this._credentials.firma,
+              pngFile // Usar el PNG generado en lugar del SVG
+            );
+  
+            this.crearCredentialsService.uploadCredentials(credentialsToUpload).subscribe({
+              next: (response: HttpResponse<string>) => {
+                console.log('Response:', response);
+                if (response.status === 200) {
+                  console.log('PNG and credentials uploaded successfully', response.body);
+                }
+              },
+              error: (error: HttpErrorResponse) => {
+                console.error('Error uploading PNG and credentials', error);
+              },
+              complete: () => {
+                console.log('Upload operation completed');
+                this.showSuccessMessage();
+              }
+            });
+          } else {
+            console.error('Credentials data is not available.');
+          }
+        } else {
+          // Manejar el caso en que blob es null
+          console.error('No se pudo generar el PNG.');
+        }
+      }, 'image/png');
+    };
+    img.src = url;
   }
+  
   showSuccessMessage() {
     this.uploadSuccess = true;
   // Forzar la detección de cambios para actualizar la UI inmediatamente
